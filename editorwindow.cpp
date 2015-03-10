@@ -3,6 +3,8 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QShortcut>
+#include <QKeySequence>
 #include <QStatusBar>
 #include <QMessageBox>
 #include <QToolBar>
@@ -35,6 +37,10 @@ EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     setMinimumSize(500,500);
     setWindowTitle("QT VEditeur");
     centerWindow();
+
+    QShortcut * shortcut = new QShortcut(QKeySequence(tr("Ctrl+H", "Hide|Show")), this);
+    shortcut->setContext(Qt::ApplicationShortcut);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(toggleToolbar()));
 }
 
 void EditorWindow::createMenu() {
@@ -189,17 +195,17 @@ void EditorWindow::centerWindow() {
 }
 
 void EditorWindow::createToolbar() {
-    QToolBar *toolbar = new QToolBar();
-    toolbar->insertAction(0,_newFile);
-    toolbar->insertAction(0,_openFile);
-    toolbar->insertAction(0,_saveFile);
-    toolbar->insertAction(0,_saveasFile);
-    toolbar->insertAction(0,_copy);
-    toolbar->insertAction(0,_cut);
-    toolbar->insertAction(0,_paste);
-    toolbar->setMovable(false);
-    toolbar->setFixedWidth(500);
-    addToolBar(toolbar);
+    _toolbar = new QToolBar();
+    _toolbar->insertAction(0,_newFile);
+    _toolbar->insertAction(0,_openFile);
+    _toolbar->insertAction(0,_saveFile);
+    _toolbar->insertAction(0,_saveasFile);
+    _toolbar->insertAction(0,_copy);
+    _toolbar->insertAction(0,_cut);
+    _toolbar->insertAction(0,_paste);
+    _toolbar->setMovable(false);
+    _toolbar->setFixedWidth(500);
+    addToolBar(_toolbar);
 }
 
 void EditorWindow::about() {
@@ -210,6 +216,14 @@ void EditorWindow::about() {
 
 QLabel* EditorWindow::getStatusBar() {
     return _stats;
+}
+
+void EditorWindow::toggleToolbar() {
+    if(_toolbar->isVisible()) {
+        _toolbar->hide();
+    } else {
+        _toolbar->show();
+    }
 }
 
 

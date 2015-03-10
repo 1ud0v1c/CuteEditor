@@ -14,8 +14,7 @@ HtmlHighlighter::HtmlHighlighter(QTextDocument *document)
     setFormatFor(Tag, tagFormat);
 
     QTextCharFormat commentFormat;
-    commentFormat.setForeground(QColor(128, 10, 74));
-    commentFormat.setFontItalic(true);
+    commentFormat.setForeground(QColor(233, 247, 70));
     setFormatFor(Comment, commentFormat);
 }
 

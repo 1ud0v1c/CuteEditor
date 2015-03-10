@@ -17,6 +17,7 @@ class QTextEditNumber : public QTextEdit {
 
     public slots:
         void resizeEvent(QResizeEvent *e);
+        void highlightCurrentLine();
 
     private slots:
 

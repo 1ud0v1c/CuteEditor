@@ -28,6 +28,7 @@ class EditorWindow : public QMainWindow {
         void paste();
         void about();
         void closeTab(int index);
+        void toggleToolbar();
 
     private:
         QAction* _newFile;
@@ -41,6 +42,7 @@ class EditorWindow : public QMainWindow {
         QAction* _paste;
 
         QTabWidget *_tabManager;
+        QToolBar *_toolbar;
         QLabel *_stats;
         QString _fileName;
 

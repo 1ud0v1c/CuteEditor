@@ -7,6 +7,7 @@
 #include <QRect>
 #include <QRectF>
 #include <QAbstractTextDocumentLayout>
+#include <QList>
 
 QTextEditNumber::QTextEditNumber(QWidget *parent) : QTextEdit(parent) {
     lineNumberArea = new LineNumber(this);
@@ -17,7 +18,27 @@ QTextEditNumber::QTextEditNumber(QWidget *parent) : QTextEdit(parent) {
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(updateLineNumberArea()));
 
     updateLineNumberAreaWidth(0);
+    highlightCurrentLine();
 }
+
+void QTextEditNumber::highlightCurrentLine() {
+    QList<QTextEdit::ExtraSelection> extraSelections;
+
+    if (!isReadOnly()) {
+        QTextEdit::ExtraSelection selection;
+
+        QColor lineColor = QColor(Qt::darkGray).lighter(160);
+
+        selection.format.setBackground(lineColor);
+        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+        selection.cursor = textCursor();
+        selection.cursor.clearSelection();
+        extraSelections.append(selection);
+    }
+
+    setExtraSelections(extraSelections);
+}
+
 
 int QTextEditNumber::lineNumberAreaWidth() {
     int digits = 1;
