@@ -29,6 +29,7 @@ class EditorWindow : public QMainWindow {
         void about();
         void closeTab(int index);
         void toggleToolbar();
+        void handleChangedTab(int index);
 
     private:
         QAction* _newFile;
@@ -45,7 +46,6 @@ class EditorWindow : public QMainWindow {
         QToolBar *_toolbar;
         QLabel *_stats;
         QString _fileName;
-
 };
 
 #endif // EDITORWINDOW_H

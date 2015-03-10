@@ -20,6 +20,7 @@
 #include <QMenu>
 #include <QClipboard>
 #include <QDebug>
+#include <sstream>
 
 EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     _tabManager = new QTabWidget(this);
@@ -83,6 +84,7 @@ void EditorWindow::setActions() {
     connect(_paste, SIGNAL(triggered()), this, SLOT(paste()));
 
     connect(_tabManager,SIGNAL(tabCloseRequested(int)),this, SLOT(closeTab(int)));
+    connect(_tabManager,SIGNAL(currentChanged(int)), this, SLOT(handleChangedTab(int)));
 }
 
 void EditorWindow::newTab() {
@@ -95,8 +97,7 @@ void EditorWindow::closeTab(int index) {
 }
 
 void EditorWindow::openFile() {
-    _fileName = QFileDialog::getOpenFileName(this, tr("Open File..."),
-                                                 QString(), tr("HTML-Files (*.html);;All Files (*)"));
+    _fileName = QFileDialog::getOpenFileName(this, tr("Open File..."),QString(), tr("HTML-Files (*.html);;All Files (*)"));
     if (!_fileName.isEmpty()) {
         QFile file(_fileName);
         file.open(QFile::ReadOnly | QFile::Text);
@@ -148,6 +149,8 @@ bool EditorWindow::saveAs() {
             stream.flush();
             file.close();
             _fileName = fileName;
+            QFileInfo fileInfo(_fileName);
+            _tabManager->setTabText(_tabManager->currentIndex(), QString(fileInfo.fileName()));
         }
     } else {
         return false;
@@ -226,6 +229,18 @@ void EditorWindow::toggleToolbar() {
     }
 }
 
+
+void EditorWindow::handleChangedTab(int index) {
+    EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
+    if(editSplitter) {
+        QTextDocument *doc = editSplitter->getEdit()->document();
+        int lines = doc->lineCount();
+        int characters = doc->characterCount()-1;
+        std::ostringstream s;
+        s << "Caractere(s) : " << characters << " - Lignes : " << lines;
+        getStatusBar()->setText(s.str().c_str());
+    }
+}
 
 EditorWindow::~EditorWindow() {
 
