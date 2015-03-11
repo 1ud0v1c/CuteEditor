@@ -10,6 +10,10 @@ class ViewEdit : public QTextEdit {
         explicit ViewEdit(QTextEdit *parent = 0);
         void update(QString string);
 
+    protected:
+        void mousePressEvent(QMouseEvent *e);
+        void mouseMoveEvent(QMouseEvent *e);
+
     signals:
 
     public slots:

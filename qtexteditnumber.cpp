@@ -42,6 +42,24 @@ void QTextEditNumber::keyPressEvent(QKeyEvent *e) {
         if(word == "html") {
             tc.removeSelectedText();
             tc.insertText(html5);
+        } else if(word == "input") {
+            tc.removeSelectedText();
+            tc.insertText(input);
+        } else if(word == "strong") {
+            tc.removeSelectedText();
+            tc.insertText(strong);
+        } else if(word == "ul") {
+            tc.removeSelectedText();
+            tc.insertText(ul);
+        } else if(word == "img") {
+            tc.removeSelectedText();
+            tc.insertText(img);
+        } else if(word == "a") {
+            tc.removeSelectedText();
+            tc.insertText(link);
+        } else if(word == "em") {
+            tc.removeSelectedText();
+            tc.insertText(italic);
         } else {
             QTextEdit::keyPressEvent(e);
         }
