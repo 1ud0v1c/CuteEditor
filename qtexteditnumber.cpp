@@ -8,6 +8,7 @@
 #include <QRectF>
 #include <QAbstractTextDocumentLayout>
 #include <QList>
+#include <QTextCursor>
 #include <QDebug>
 
 QTextEditNumber::QTextEditNumber(QWidget *parent) : QTextEdit(parent) {
@@ -21,6 +22,32 @@ QTextEditNumber::QTextEditNumber(QWidget *parent) : QTextEdit(parent) {
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 }
+
+void QTextEditNumber::keyPressEvent(QKeyEvent *e) {
+    bool tabPress = false;
+    switch (e->key()) {
+       case Qt::Key_Tab:
+            tabPress = true;
+            break;
+       default:
+           QTextEdit::keyPressEvent(e);
+           break;
+    }
+
+    QTextCursor tc = textCursor();
+    tc.select(QTextCursor::WordUnderCursor);
+    QString word = tc.selectedText();
+
+    if(tabPress) {
+        if(word == "html") {
+            tc.removeSelectedText();
+            tc.insertText(html5);
+        } else {
+            QTextEdit::keyPressEvent(e);
+        }
+    }
+}
+
 
 void QTextEditNumber::highlightCurrentLine() {
     QList<QTextEdit::ExtraSelection> extraSelections;

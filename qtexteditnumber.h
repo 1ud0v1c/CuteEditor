@@ -13,6 +13,9 @@ class QTextEditNumber : public QTextEdit {
         void lineNumberAreaPaintEvent(QPaintEvent *event);
         int lineNumberAreaWidth();
 
+    protected:
+        void keyPressEvent(QKeyEvent *e);
+
     signals:
 
     public slots:
@@ -20,13 +23,13 @@ class QTextEditNumber : public QTextEdit {
         void highlightCurrentLine();
 
     private slots:
-
         void updateLineNumberAreaWidth(int newBlockCount);
         void updateLineNumberArea(QRectF /*rect_f*/);
         void updateLineNumberArea(int /*slider_pos*/);
         void updateLineNumberArea();
 
     private:
+        const QString html5 = "<!doctype html>\n<html lang=\"fr\">\n\t<head>\n\t\t <meta charset=\"utf-8\">\n\t\t <title>Titre</title>\n\t\t </head>\n\t<body>\n\t</body>\n</html>";
         QWidget *lineNumberArea;
 
 };
