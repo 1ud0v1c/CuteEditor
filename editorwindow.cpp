@@ -21,6 +21,8 @@
 #include <QClipboard>
 #include <QDebug>
 #include <sstream>
+#include <QSettings>
+#include <QCoreApplication>
 
 EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     _tabManager = new QTabWidget(this);
@@ -41,7 +43,9 @@ EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
 
     QShortcut * shortcut = new QShortcut(QKeySequence(tr("Ctrl+H", "Hide|Show")), this);
     shortcut->setContext(Qt::ApplicationShortcut);
+
     connect(shortcut, SIGNAL(activated()), this, SLOT(toggleToolbar()));
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(saveContext()));
 }
 
 void EditorWindow::createMenu() {
@@ -240,6 +244,13 @@ void EditorWindow::handleChangedTab(int index) {
         s << "Caractere(s) : " << characters << " - Lignes : " << lines;
         getStatusBar()->setText(s.str().c_str());
     }
+}
+
+void EditorWindow::saveContext() {
+   QSettings settings("QtEditor", "QtEditorSettings");
+   settings.beginGroup("Onglets");
+//   settings.setValue("fullscreen", (_fullscreen->isChecked()) ? true : false);
+   settings.endGroup();
 }
 
 EditorWindow::~EditorWindow() {

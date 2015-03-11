@@ -2,6 +2,7 @@
 #define EDITORWINDOW_H
 
 #include <QMainWindow>
+#include <QClipboard>
 #include "editorqsplitter.h"
 
 class EditorWindow : public QMainWindow {
@@ -30,6 +31,7 @@ class EditorWindow : public QMainWindow {
         void closeTab(int index);
         void toggleToolbar();
         void handleChangedTab(int index);
+        void saveContext();
 
     private:
         QAction* _newFile;

@@ -12,15 +12,15 @@ class HtmlHighlighter : public QSyntaxHighlighter {
             Entity,
             Tag,
             Comment,
-            LastConstruct = Comment
+            Attribute,
+            Value,
+            LastConstruct = Value
         };
 
         HtmlHighlighter(QTextDocument *document);
-
-        void setFormatFor(Construct construct,
-                          const QTextCharFormat &format);
+        void setFormatFor(Construct construct, const QTextCharFormat &format);
         QTextCharFormat formatFor(Construct construct) const
-            { return m_formats[construct]; }
+        { return m_formats[construct]; }
 
     protected:
         enum State {
