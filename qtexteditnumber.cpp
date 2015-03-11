@@ -8,6 +8,7 @@
 #include <QRectF>
 #include <QAbstractTextDocumentLayout>
 #include <QList>
+#include <QDebug>
 
 QTextEditNumber::QTextEditNumber(QWidget *parent) : QTextEdit(parent) {
     lineNumberArea = new LineNumber(this);
@@ -28,7 +29,6 @@ void QTextEditNumber::highlightCurrentLine() {
         QTextEdit::ExtraSelection selection;
 
         QColor lineColor = QColor(Qt::darkGray).lighter(160);
-
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         selection.cursor = textCursor();
@@ -101,7 +101,7 @@ void QTextEditNumber::updateLineNumberArea() {
 //        if (dy <= this->document()->documentMargin() + prev_block_height)
 //            this->verticalScrollBar()->setSliderPosition(slider_pos - (this->document()->documentMargin() + prev_block_height));
 //    }
-
+    highlightCurrentLine();
 }
 
 
