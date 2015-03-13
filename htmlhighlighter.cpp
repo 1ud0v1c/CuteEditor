@@ -69,8 +69,7 @@ void HtmlHighlighter::highlightBlock(const QString &text) {
                         } else {
                             state = InTag;
                             start = pos;
-                            while (pos < len && text.at(pos) != space && text.at(pos) != endTag
-                                   && text.at(pos) != tab && text.mid(pos, 2) != endElement)
+                            while (pos < len && text.at(pos) != space && text.at(pos) != endTag && text.at(pos) != tab && text.mid(pos, 2) != endElement)
                                 ++pos;
                             if (text.mid(pos, 2) == endElement)
                                 ++pos;

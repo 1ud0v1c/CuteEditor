@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTextEdit>
+#include <map>
 
 class QTextEditNumber : public QTextEdit {
     Q_OBJECT
@@ -12,6 +13,7 @@ class QTextEditNumber : public QTextEdit {
         int getFirstVisibleBlockId();
         void lineNumberAreaPaintEvent(QPaintEvent *event);
         int lineNumberAreaWidth();
+        void createSnippets();
 
     protected:
         void keyPressEvent(QKeyEvent *e);
@@ -29,16 +31,8 @@ class QTextEditNumber : public QTextEdit {
         void updateLineNumberArea();
 
     private:
-        const QString html5 = "<!doctype html>\n<html lang=\"fr\">\n\t<head>\n\t\t <meta charset=\"utf-8\">\n\t\t <title>Titre</title>\n\t\t </head>\n\t<body>\n\t</body>\n</html>";
-        const QString input = "<input type=\"text\" name=\"\" />";
-        const QString strong = "<strong></strong>";
-        const QString ul = "<ul>\n\t<li></li>\n</ul>";
-        const QString img = "<img src=\"\" alt=\"\" />";
-        const QString link = "<a href=\"\"></a>";
-        const QString italic = "<em></em>";
-
         QWidget *lineNumberArea;
-
+        std::map<std::string, QString> _snippets;
 };
 
 #endif // QTEXTEDITNUMBER_H

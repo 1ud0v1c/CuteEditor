@@ -21,6 +21,35 @@ QTextEditNumber::QTextEditNumber(QWidget *parent) : QTextEdit(parent) {
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
+    createSnippets();
+}
+
+void QTextEditNumber::createSnippets() {
+    QString html5 = "<!doctype html>\n<html lang=\"fr\">\n\t<head>\n\t\t <meta charset=\"utf-8\">\n\t\t <title>Titre</title>\n\t\t </head>\n\t<body>\n\t</body>\n</html>";
+    QString input = "<input type=\"text\" name=\"\" />";
+    QString strong = "<strong></strong>";
+    QString ul = "<ul>\n\t<li></li>\n</ul>";
+    QString img = "<img src=\"\" alt=\"\" />";
+    QString link = "<a href=\"\"></a>";
+    QString italic = "<em></em>";
+    QString css = "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/main.css\" />";
+    QString js = "<script type=\"text/javascript\" src=\"js/main.js\"></script>";
+    QString textarea = "<textarea name=\"\" cols=\"30\" rows=\"10\"></textarea>";
+    QString select = "<select>\n\t<option value=\"\"></option>\n</select>";
+    QString form = "<form action=\"#\" method=\"post\"></form>";
+
+    _snippets["html"] = html5;
+    _snippets["input"] = input;
+    _snippets["strong"] = strong;
+    _snippets["ul"] = ul;
+    _snippets["img"] = img;
+    _snippets["a"] = link;
+    _snippets["em"] = italic;
+    _snippets["css"] = css;
+    _snippets["js"] = js;
+    _snippets["texta"] = textarea;
+    _snippets["select"] = select;
+    _snippets["form"] = form;
 }
 
 void QTextEditNumber::keyPressEvent(QKeyEvent *e) {
@@ -39,27 +68,9 @@ void QTextEditNumber::keyPressEvent(QKeyEvent *e) {
     QString word = tc.selectedText();
 
     if(tabPress) {
-        if(word == "html") {
+        if(_snippets.find(word.toStdString()) != _snippets.end()) {
             tc.removeSelectedText();
-            tc.insertText(html5);
-        } else if(word == "input") {
-            tc.removeSelectedText();
-            tc.insertText(input);
-        } else if(word == "strong") {
-            tc.removeSelectedText();
-            tc.insertText(strong);
-        } else if(word == "ul") {
-            tc.removeSelectedText();
-            tc.insertText(ul);
-        } else if(word == "img") {
-            tc.removeSelectedText();
-            tc.insertText(img);
-        } else if(word == "a") {
-            tc.removeSelectedText();
-            tc.insertText(link);
-        } else if(word == "em") {
-            tc.removeSelectedText();
-            tc.insertText(italic);
+            tc.insertText(_snippets.find(word.toStdString())->second);
         } else {
             QTextEdit::keyPressEvent(e);
         }
