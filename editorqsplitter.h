@@ -15,6 +15,11 @@ class EditorQSplitter : public QSplitter {
         QTextEdit* getEdit();
         void setTabSize(int tabSize);
 
+    protected:
+        void dragEnterEvent(QDragEnterEvent *e);
+        void dragMoveEvent(QDragMoveEvent *e);
+        void dropEvent(QDropEvent *e);
+
     private:
         QTextEditNumber *_edit;
         QLabel *_display;

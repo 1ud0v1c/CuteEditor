@@ -7,6 +7,9 @@
 #include <QFontMetrics>
 #include <QFont>
 #include <sstream>
+#include <QDragEnterEvent>
+#include <QMimeData>
+#include <QFileInfo>
 #include "editorwindow.h"
 #include "htmlhighlighter.h"
 
@@ -31,6 +34,7 @@ EditorQSplitter::EditorQSplitter(QWidget *parent) : QSplitter(parent) {
     layout->addWidget(rightPanel);
 
     _changed = false;
+    setAcceptDrops(true);
     connect(_document,SIGNAL(contentsChanged()),this,SLOT(update()));
 }
 
@@ -62,4 +66,44 @@ void EditorQSplitter::update() {
 
 QTextEdit* EditorQSplitter::getEdit() {
     return _edit;
+}
+
+void EditorQSplitter::dragEnterEvent(QDragEnterEvent *e) {
+    e->accept();
+}
+
+void EditorQSplitter::dragMoveEvent(QDragMoveEvent *e) {
+    e->accept();
+}
+
+void EditorQSplitter::dropEvent(QDropEvent *e) {
+    if (e->mimeData()->hasFormat("text/uri-list")) {
+        QList<QUrl> urls = e->mimeData()->urls();
+        if (urls.isEmpty()) {
+            return;
+        }
+
+        QString fileName = urls.first().toLocalFile();
+        if (fileName.isEmpty()) {
+           return;
+        } else {
+            QObject *currentWidget = this->parent();
+            QTabWidget* tabWidget = qobject_cast<QTabWidget *>(currentWidget->parent());
+            EditorWindow* window = qobject_cast<EditorWindow *>(tabWidget->parent());
+
+            window->setFilename(fileName);
+            QFile file(fileName);
+            file.open(QFile::ReadOnly | QFile::Text);
+            QTextStream ReadFile(&file);
+
+            QFileInfo fileInfo(file.fileName());
+            int newTab = tabWidget->addTab(new EditorQSplitter(),fileInfo.fileName());
+            tabWidget->setCurrentIndex(newTab);
+
+            EditorQSplitter* editSplitter = window->getCurrentEditorQSplitter();
+            if(editSplitter) {
+                editSplitter->getEdit()->setPlainText(ReadFile.readAll());
+            }
+        }
+    }
 }

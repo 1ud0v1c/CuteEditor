@@ -17,9 +17,6 @@ class QTextEditNumber : public QTextEdit {
 
     protected:
         void keyPressEvent(QKeyEvent *e);
-        void dragEnterEvent(QDragEnterEvent *e);
-        void dragMoveEvent(QDragMoveEvent *e);
-        void dropEvent(QDropEvent *e);
 
     signals:
 

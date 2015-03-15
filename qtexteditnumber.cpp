@@ -23,7 +23,6 @@ QTextEditNumber::QTextEditNumber(QWidget *parent) : QTextEdit(parent) {
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
     createSnippets();
-    setAcceptDrops(true);
 }
 
 void QTextEditNumber::createSnippets() {
@@ -75,31 +74,6 @@ void QTextEditNumber::keyPressEvent(QKeyEvent *e) {
             tc.insertText(_snippets.find(word.toStdString())->second);
         } else {
             QTextEdit::keyPressEvent(e);
-        }
-    }
-}
-
-
-void QTextEditNumber::dragEnterEvent(QDragEnterEvent *e) {
-    e->accept();
-}
-
-void QTextEditNumber::dragMoveEvent(QDragMoveEvent *e) {
-    e->accept();
-}
-
-void QTextEditNumber::dropEvent(QDropEvent *e) {
-    if (e->mimeData()->hasFormat("text/uri-list")) {
-        QList<QUrl> urls = e->mimeData()->urls();
-        if (urls.isEmpty()) {
-            return;
-        }
-
-        QString fileName = urls.first().toLocalFile();
-        if (fileName.isEmpty()) {
-           return;
-        } else {
-            // TODO : open file
         }
     }
 }

@@ -120,6 +120,10 @@ void EditorWindow::openFile() {
     }
 }
 
+void EditorWindow::setFilename(QString fileName) {
+    _fileName = fileName;
+}
+
 bool EditorWindow::saveFile() {
     if (_fileName.isEmpty()) {
         return saveAs();

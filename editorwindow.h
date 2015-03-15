@@ -17,6 +17,7 @@ class EditorWindow : public QMainWindow {
         void setActions();
         QLabel* getStatusBar();
         EditorQSplitter* getCurrentEditorQSplitter();
+        void setFilename(QString fileName);
 
     public slots:
         bool saveFile();
