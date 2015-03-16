@@ -24,8 +24,8 @@ class EditorQSplitter : public QSplitter {
         QTextEditNumber *_edit;
         QLabel *_display;
         ViewEdit *_view;
-        bool _changed;
         QTextDocument *_document;
+        bool _changed;
 
     public slots:
         void update();

@@ -38,7 +38,7 @@ EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     statusBar()->addPermanentWidget(_stats);
 
     setMinimumSize(500,500);
-    setWindowTitle("QT VEditeur");
+    setWindowTitle("QtEditor");
     centerWindow();
 
     QShortcut * shortcut = new QShortcut(QKeySequence(tr("Ctrl+H", "Hide|Show")), this);
@@ -101,7 +101,7 @@ void EditorWindow::closeTab(int index) {
 }
 
 void EditorWindow::openFile() {
-    _fileName = QFileDialog::getOpenFileName(this, tr("Open File..."),QString(), tr("HTML-Files (*.html);;All Files (*)"));
+    _fileName = QFileDialog::getOpenFileName(this, tr("Open File..."),QString(), tr("HTML-Files (*.html);;CSS-Files (*.css);;All Files (*)"));
     if (!_fileName.isEmpty()) {
         QFile file(_fileName);
         file.open(QFile::ReadOnly | QFile::Text);
@@ -142,7 +142,7 @@ bool EditorWindow::saveFile() {
 }
 
 bool EditorWindow::saveAs() {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(), tr("HTML Files (*.html);;All Files (*)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(), tr("HTML Files (*.html);;CSS-Files (*.css);;All Files (*)"));
 
     if (!fileName.isEmpty()) {
         QFile file(fileName);
