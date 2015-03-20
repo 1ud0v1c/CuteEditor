@@ -114,3 +114,7 @@ void EditorQSplitter::dropEvent(QDropEvent *e) {
         }
     }
 }
+
+bool EditorQSplitter::getChanged(){
+    return _changed;
+}

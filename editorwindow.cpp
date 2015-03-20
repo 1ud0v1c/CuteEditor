@@ -97,6 +97,30 @@ void EditorWindow::newTab() {
 }
 
 void EditorWindow::closeTab(int index) {
+    if(getCurrentEditorQSplitter()->getChanged()){
+        QMessageBox* save = new QMessageBox(0);
+        save->setText("Your file has been modified : do you want to save changes ?");
+        save->addButton(QMessageBox::Save);
+        save->addButton(QMessageBox::Discard);
+        save->addButton(QMessageBox::Cancel);
+        save->show();
+        int selection = save->exec();
+        switch(selection){
+        case QMessageBox::Save:
+            saveFile();
+            _tabManager->removeTab(index);
+            break;
+        case QMessageBox::Discard:
+            _tabManager->removeTab(index);
+            break;
+        case QMessageBox::Cancel:
+            break;
+        default:
+            break;
+        }
+    }else{
+        _tabManager->removeTab(index);
+    }
     _tabManager->removeTab(index);
 }
 

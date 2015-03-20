@@ -17,6 +17,7 @@ class EditorQSplitter : public QSplitter {
         void setTabSize(int tabSize);
         void setFilename(QString filename);
         QString getFilename();
+        bool getChanged();
 
     protected:
         void dragEnterEvent(QDragEnterEvent *e);
