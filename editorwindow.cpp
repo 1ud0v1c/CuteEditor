@@ -277,9 +277,17 @@ void EditorWindow::handleChangedTab(int index) {
 
 void EditorWindow::saveContext() {
    QSettings settings("QtEditor", "QtEditorSettings");
-   settings.beginGroup("Onglets");
-//   settings.setValue("fullscreen", (_fullscreen->isChecked()) ? true : false);
-   settings.endGroup();
+
+   for (int i = 0; i < _tabManager->count(); ++i) {
+        EditorQSplitter* currentTab = dynamic_cast<EditorQSplitter *>(_tabManager->widget(i));
+        qDebug() << "Position : i " << i << ", Nom du fichier : " << currentTab->getFilename();
+         settings.beginGroup("onglet");
+         settings.setValue("index",i);
+         settings.setValue("name",(!currentTab->getFilename().isEmpty()) ? currentTab->getFilename() : "lol");
+         settings.endGroup();
+   }
+
+
 }
 
 EditorWindow::~EditorWindow() {
