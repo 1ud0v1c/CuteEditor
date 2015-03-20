@@ -19,6 +19,7 @@ class EditorWindow : public QMainWindow {
         QLabel* getStatusBar();
         EditorQSplitter* getCurrentEditorQSplitter();
         void setFilename(QString fileName);
+        void newTabWithName(const char *name);
 
 private :
         int verifyClose(int index);

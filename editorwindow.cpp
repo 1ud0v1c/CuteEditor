@@ -27,7 +27,24 @@
 EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     _tabManager = new QTabWidget(this);
     setCentralWidget(_tabManager);
-    _tabManager->addTab(new EditorQSplitter(),"New Document");
+
+
+    // Context
+    QSettings settings("QtEditor", "QtEditorSettings");
+
+    std::stringstream s;
+    s << "onglet" << 0;
+    QString optionName = QString(s.str().c_str());
+
+    settings.beginGroup(optionName);
+    QString filename = settings.value("name").value<QString>();
+    qDebug() << filename.toStdString().c_str();
+    settings.endGroup();
+
+    newTabWithName(filename.toStdString().c_str());
+    // Fin Context
+
+
     _tabManager->setTabsClosable(true);
 
     createMenu();
@@ -94,6 +111,30 @@ void EditorWindow::setActions() {
 void EditorWindow::newTab() {
     int newTab = _tabManager->addTab(new EditorQSplitter(),"New Document");
     _tabManager->setCurrentIndex(newTab);
+}
+
+void EditorWindow::newTabWithName(const char* name) {
+    QString filename = QString(name);
+    if (!filename.isEmpty()) {
+        QFile file(filename);
+        file.open(QFile::ReadOnly | QFile::Text);
+        qDebug() << file.isOpen();
+        qDebug() << file.isReadable();
+        QTextStream readFile(&file);
+        qDebug() << readFile.status();
+
+        QFileInfo fileInfo(file.fileName());
+        int newTab = _tabManager->addTab(new EditorQSplitter(), fileInfo.fileName());
+        _tabManager->setCurrentIndex(newTab);
+
+        EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
+        if(editSplitter) {
+            // editSplitter->getEdit()->setPlainText(readFile.readAll());
+            editSplitter->setFilename(filename);
+        }
+    } else {
+        qDebug() << "Une erreur s'est produite lors de l'ouverture de ce fichier.";
+    }
 }
 
 void EditorWindow::closeTab(int index) {
@@ -281,14 +322,18 @@ void EditorWindow::handleChangedTab(int index) {
 
 void EditorWindow::saveContext() {
    QSettings settings("QtEditor", "QtEditorSettings");
+   settings.clear();
 
    for (int i = 0; i < _tabManager->count(); ++i) {
         EditorQSplitter* currentTab = dynamic_cast<EditorQSplitter *>(_tabManager->widget(i));
-        qDebug() << "Position : i " << i << ", Nom du fichier : " << currentTab->getFilename();
-         settings.beginGroup("onglet");
-         settings.setValue("index",i);
-         settings.setValue("name",(!currentTab->getFilename().isEmpty()) ? currentTab->getFilename() : "lol");
-         settings.endGroup();
+
+        std::stringstream s;
+        s << "onglet" << i;
+        QString optionName = QString(s.str().c_str());
+
+        settings.beginGroup(optionName);
+        settings.setValue("name",(!currentTab->getFilename().isEmpty()) ? currentTab->getFilename() : "New Document");
+        settings.endGroup();
    }
 }
 
