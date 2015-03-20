@@ -205,6 +205,7 @@ bool EditorWindow::saveFile() {
         success = writer.write(editSplitter->getEdit()->document());
         if(success) {
             editSplitter->getEdit()->document()->setModified(false);
+            editSplitter->setChanged(false);
         }
     }
 
@@ -229,6 +230,7 @@ bool EditorWindow::saveAs() {
             editSplitter->setFilename(filename);
             QFileInfo fileInfo(filename);
             _tabManager->setTabText(_tabManager->currentIndex(), QString(fileInfo.fileName()));
+            editSplitter->setChanged(false);
         }
     } else {
         return false;

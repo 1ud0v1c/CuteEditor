@@ -58,7 +58,10 @@ void EditorQSplitter::update() {
     window->getStatusBar()->setText(s.str().c_str());
 
     if(tabWidget && !_changed) {
-        tabWidget->setTabText(tabWidget->currentIndex(), tabWidget->tabText(tabWidget->currentIndex()) +" (*)");
+        QString title = tabWidget->tabText(tabWidget->currentIndex());
+        if (!title.contains(QString("(*)"))){
+            tabWidget->setTabText(tabWidget->currentIndex(), title +" (*)");
+        }
         _changed = true;
     }
 }
@@ -117,4 +120,8 @@ void EditorQSplitter::dropEvent(QDropEvent *e) {
 
 bool EditorQSplitter::getChanged(){
     return _changed;
+}
+
+void EditorQSplitter::setChanged(bool changed){
+    _changed = changed;
 }

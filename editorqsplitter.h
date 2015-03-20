@@ -18,6 +18,7 @@ class EditorQSplitter : public QSplitter {
         void setFilename(QString filename);
         QString getFilename();
         bool getChanged();
+        void setChanged(bool changed);
 
     protected:
         void dragEnterEvent(QDragEnterEvent *e);
