@@ -101,9 +101,9 @@ void EditorWindow::closeTab(int index) {
 }
 
 void EditorWindow::openFile() {
-    _fileName = QFileDialog::getOpenFileName(this, tr("Open File..."),QString(), tr("HTML-Files (*.html);;CSS-Files (*.css);;All Files (*)"));
-    if (!_fileName.isEmpty()) {
-        QFile file(_fileName);
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File..."),QString(), tr("HTML-Files (*.html);;CSS-Files (*.css);;All Files (*)"));
+    if (!filename.isEmpty()) {
+        QFile file(filename);
         file.open(QFile::ReadOnly | QFile::Text);
         QTextStream ReadFile(&file);
 
@@ -114,38 +114,39 @@ void EditorWindow::openFile() {
         EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
         if(editSplitter) {
             editSplitter->getEdit()->setPlainText(ReadFile.readAll());
+            editSplitter->setFilename(filename);
         }
     } else {
         qDebug() << "Une erreur s'est produite lors de l'ouverture de ce fichier.";
     }
 }
 
-void EditorWindow::setFilename(QString fileName) {
-    _fileName = fileName;
-}
 
 bool EditorWindow::saveFile() {
-    if (_fileName.isEmpty()) {
-        return saveAs();
-    }
     bool success = false;
-    QTextDocumentWriter writer(_fileName);
+
     EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
     if(editSplitter) {
+        QString filename = editSplitter->getFilename();
+        if (filename.isEmpty()) {
+            return saveAs();
+        }
+        QTextDocumentWriter writer(filename);
         writer.setFormat("plaintext");
         success = writer.write(editSplitter->getEdit()->document());
+        if(success) {
+            editSplitter->getEdit()->document()->setModified(false);
+        }
     }
-    if(success) {
-        editSplitter->getEdit()->document()->setModified(false);
-    }
+
     return success;
 }
 
 bool EditorWindow::saveAs() {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(), tr("HTML Files (*.html);;CSS-Files (*.css);;All Files (*)"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), QString(), tr("HTML Files (*.html);;CSS-Files (*.css);;All Files (*)"));
 
-    if (!fileName.isEmpty()) {
-        QFile file(fileName);
+    if (!filename.isEmpty()) {
+        QFile file(filename);
         if (!file.open(QIODevice::WriteOnly)) {
             qDebug() << "Erreur lors de l'ecriture du fichier";
         } else {
@@ -156,8 +157,8 @@ bool EditorWindow::saveAs() {
             }
             stream.flush();
             file.close();
-            _fileName = fileName;
-            QFileInfo fileInfo(_fileName);
+            editSplitter->setFilename(filename);
+            QFileInfo fileInfo(filename);
             _tabManager->setTabText(_tabManager->currentIndex(), QString(fileInfo.fileName()));
         }
     } else {

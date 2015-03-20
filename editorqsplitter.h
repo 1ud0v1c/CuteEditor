@@ -4,6 +4,7 @@
 #include <QSplitter>
 #include <QTextEdit>
 #include <QLabel>
+#include <QString>
 #include "viewedit.h"
 #include "qtexteditnumber.h"
 
@@ -14,6 +15,8 @@ class EditorQSplitter : public QSplitter {
         explicit EditorQSplitter(QWidget *parent = 0);
         QTextEdit* getEdit();
         void setTabSize(int tabSize);
+        void setFilename(QString filename);
+        QString getFilename();
 
     protected:
         void dragEnterEvent(QDragEnterEvent *e);
@@ -25,6 +28,7 @@ class EditorQSplitter : public QSplitter {
         QLabel *_display;
         ViewEdit *_view;
         QTextDocument *_document;
+        QString _filename;
         bool _changed;
 
     public slots:

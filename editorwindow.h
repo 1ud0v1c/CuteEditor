@@ -48,7 +48,6 @@ class EditorWindow : public QMainWindow {
         QTabWidget *_tabManager;
         QToolBar *_toolbar;
         QLabel *_stats;
-        QString _fileName;
 };
 
 #endif // EDITORWINDOW_H

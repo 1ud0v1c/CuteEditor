@@ -20,7 +20,6 @@ EditorQSplitter::EditorQSplitter(QWidget *parent) : QSplitter(parent) {
     setTabSize(4);
     layout->addWidget(_edit);
 
-
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     QWidget *rightPanel = new QWidget();
     rightPanel->setLayout(vboxLayout);
@@ -68,6 +67,14 @@ QTextEdit* EditorQSplitter::getEdit() {
     return _edit;
 }
 
+QString EditorQSplitter::getFilename() {
+    return _filename;
+}
+
+void EditorQSplitter::setFilename(QString filename) {
+    _filename = filename;
+}
+
 void EditorQSplitter::dragEnterEvent(QDragEnterEvent *e) {
     e->accept();
 }
@@ -91,7 +98,6 @@ void EditorQSplitter::dropEvent(QDropEvent *e) {
             QTabWidget* tabWidget = qobject_cast<QTabWidget *>(currentWidget->parent());
             EditorWindow* window = qobject_cast<EditorWindow *>(tabWidget->parent());
 
-            window->setFilename(fileName);
             QFile file(fileName);
             file.open(QFile::ReadOnly | QFile::Text);
             QTextStream ReadFile(&file);
@@ -103,6 +109,7 @@ void EditorQSplitter::dropEvent(QDropEvent *e) {
             EditorQSplitter* editSplitter = window->getCurrentEditorQSplitter();
             if(editSplitter) {
                 editSplitter->getEdit()->setPlainText(ReadFile.readAll());
+                editSplitter->setFilename(fileName);
             }
         }
     }
