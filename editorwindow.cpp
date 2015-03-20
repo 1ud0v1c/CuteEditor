@@ -64,7 +64,7 @@ void EditorWindow::createMenu() {
     _closeFile = file->addAction(QIcon(":/img/document-close.png"),"Fermer");
     _closeFile->setShortcut(Qt::CTRL + Qt::Key_W);
 
-    _quit = file->addAction(QIcon(":/img/document-exit.png"), "Quitter", this, SLOT(close()));
+    _quit = file->addAction(QIcon(":/img/document-exit.png"), "Quitter", this, SLOT(saveContext()));
     _quit->setShortcut(Qt::CTRL + Qt::Key_Q);
 
     QMenu* edit = menuBar()->addMenu("Edition");
@@ -97,8 +97,13 @@ void EditorWindow::newTab() {
 }
 
 void EditorWindow::closeTab(int index) {
-    if(getCurrentEditorQSplitter()->getChanged()){
+    verifyClose(index);
+}
+
+int EditorWindow::verifyClose(int index){
+    if(static_cast<EditorQSplitter*>(_tabManager->widget(index))->getChanged()){
         QMessageBox* save = new QMessageBox(0);
+        save->setModal(true);
         save->setText("Your file has been modified : do you want to save changes ?");
         save->addButton(QMessageBox::Save);
         save->addButton(QMessageBox::Discard);
@@ -109,19 +114,18 @@ void EditorWindow::closeTab(int index) {
         case QMessageBox::Save:
             saveFile();
             _tabManager->removeTab(index);
-            break;
+            return QMessageBox::Save;
         case QMessageBox::Discard:
             _tabManager->removeTab(index);
-            break;
+            return QMessageBox::Discard;
         case QMessageBox::Cancel:
-            break;
+            return QMessageBox::Cancel;
         default:
-            break;
+            return -1;
         }
     }else{
         _tabManager->removeTab(index);
     }
-    _tabManager->removeTab(index);
 }
 
 void EditorWindow::openFile() {
@@ -192,7 +196,7 @@ bool EditorWindow::saveAs() {
 }
 
 void EditorWindow::closeFile() {
-    _tabManager->removeTab(_tabManager->currentIndex());
+    verifyClose(_tabManager->currentIndex());
 }
 
 void EditorWindow::copy() {
@@ -286,8 +290,16 @@ void EditorWindow::saveContext() {
          settings.setValue("name",(!currentTab->getFilename().isEmpty()) ? currentTab->getFilename() : "lol");
          settings.endGroup();
    }
+}
 
-
+void EditorWindow::closeEvent(QCloseEvent* event){
+    int response;
+    for (int i = 0; i < _tabManager->count(); ++i) {
+         response = verifyClose(i);
+         if (response ==  QMessageBox::Cancel){
+             event->ignore();
+         }
+    }
 }
 
 EditorWindow::~EditorWindow() {

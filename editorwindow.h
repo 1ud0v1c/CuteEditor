@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QClipboard>
+#include <QCloseEvent>
 #include "editorqsplitter.h"
 
 class EditorWindow : public QMainWindow {
@@ -19,6 +20,9 @@ class EditorWindow : public QMainWindow {
         EditorQSplitter* getCurrentEditorQSplitter();
         void setFilename(QString fileName);
 
+private :
+        int verifyClose(int index);
+
     public slots:
         bool saveFile();
         void newTab();
@@ -33,6 +37,9 @@ class EditorWindow : public QMainWindow {
         void toggleToolbar();
         void handleChangedTab(int index);
         void saveContext();
+
+protected :
+        void closeEvent(QCloseEvent* event);
 
     private:
         QAction* _newFile;
