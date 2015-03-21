@@ -55,6 +55,8 @@ void QTextEditNumber::createSnippets() {
 
 void QTextEditNumber::keyPressEvent(QKeyEvent *e) {
     bool tabPress = false;
+    setOpen(false);
+
     switch (e->key()) {
        case Qt::Key_Tab:
             tabPress = true;
@@ -198,4 +200,13 @@ void QTextEditNumber::lineNumberAreaPaintEvent(QPaintEvent *event) {
         ++blockNumber;
     }
 
+}
+
+
+void QTextEditNumber::setOpen(bool isOpen) {
+    _open = isOpen;
+}
+
+bool QTextEditNumber::getOpen() {
+    return _open;
 }

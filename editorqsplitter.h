@@ -17,8 +17,8 @@ class EditorQSplitter : public QSplitter {
         void setTabSize(int tabSize);
         void setFilename(QString filename);
         QString getFilename();
-        bool getChanged();
-        void setChanged(bool changed);
+        QTextDocument* getDocument();
+        void setOpen(bool isOpen);
 
     protected:
         void dragEnterEvent(QDragEnterEvent *e);
@@ -31,7 +31,7 @@ class EditorQSplitter : public QSplitter {
         ViewEdit *_view;
         QTextDocument *_document;
         QString _filename;
-        bool _changed;
+        bool _open;
 
     public slots:
         void update();

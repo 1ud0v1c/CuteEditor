@@ -14,6 +14,8 @@ class QTextEditNumber : public QTextEdit {
         void lineNumberAreaPaintEvent(QPaintEvent *event);
         int lineNumberAreaWidth();
         void createSnippets();
+        bool getOpen();
+        void setOpen(bool isOpen);
 
     protected:
         void keyPressEvent(QKeyEvent *e);
@@ -26,12 +28,13 @@ class QTextEditNumber : public QTextEdit {
 
     private slots:
         void updateLineNumberAreaWidth(int newBlockCount);
-        void updateLineNumberArea(QRectF /*rect_f*/);
-        void updateLineNumberArea(int /*slider_pos*/);
+        void updateLineNumberArea(QRectF);
+        void updateLineNumberArea(int);
         void updateLineNumberArea();
 
     private:
         QWidget *lineNumberArea;
+        bool _open;
         std::map<std::string, QString> _snippets;
 };
 

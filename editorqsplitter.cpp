@@ -17,6 +17,7 @@ EditorQSplitter::EditorQSplitter(QWidget *parent) : QSplitter(parent) {
     QHBoxLayout *layout = new QHBoxLayout(this);
     _edit = new QTextEditNumber();
     _edit->setStyleSheet("background: #c0c0c0;");
+    _edit->setUndoRedoEnabled(true);
     setTabSize(4);
     layout->addWidget(_edit);
 
@@ -32,7 +33,6 @@ EditorQSplitter::EditorQSplitter(QWidget *parent) : QSplitter(parent) {
 
     layout->addWidget(rightPanel);
 
-    _changed = false;
     setAcceptDrops(true);
     connect(_document,SIGNAL(contentsChanged()),this,SLOT(update()));
 }
@@ -57,12 +57,11 @@ void EditorQSplitter::update() {
     s << "Caractere(s) : " << characters << " - Lignes : " << lines;
     window->getStatusBar()->setText(s.str().c_str());
 
-    if(tabWidget && !_changed) {
+    if(tabWidget && _document->isModified() && !_edit->getOpen()) {
         QString title = tabWidget->tabText(tabWidget->currentIndex());
         if (!title.contains(QString("(*)"))){
             tabWidget->setTabText(tabWidget->currentIndex(), title +" (*)");
         }
-        _changed = true;
     }
 }
 
@@ -118,10 +117,10 @@ void EditorQSplitter::dropEvent(QDropEvent *e) {
     }
 }
 
-bool EditorQSplitter::getChanged(){
-    return _changed;
+QTextDocument *EditorQSplitter::getDocument() {
+    return _document;
 }
 
-void EditorQSplitter::setChanged(bool changed){
-    _changed = changed;
+void EditorQSplitter::setOpen(bool isOpen) {
+    _edit->setOpen(isOpen);
 }

@@ -94,6 +94,7 @@ void EditorWindow::newTabWithName(const char* name) {
 
         EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
         if(editSplitter) {
+            editSplitter->setOpen(true);
             editSplitter->getEdit()->setPlainText(readFile.readAll());
             editSplitter->setFilename(filename);
         }
@@ -101,8 +102,6 @@ void EditorWindow::newTabWithName(const char* name) {
         qDebug() << "Une erreur s'est produite lors de l'ouverture de ce fichier.";
     }
 }
-
-
 
 
 void EditorWindow::createMenu() {
@@ -158,7 +157,7 @@ void EditorWindow::closeTab(int index) {
 }
 
 int EditorWindow::verifyClose(int index){
-    if(static_cast<EditorQSplitter*>(_tabManager->widget(index))->getChanged()){
+    if(static_cast<EditorQSplitter*>(_tabManager->widget(index))->getDocument()->isModified()) {
         QMessageBox* save = new QMessageBox(0);
         save->setModal(true);
         save->setText("Your file has been modified : do you want to save changes ?");
@@ -199,6 +198,7 @@ void EditorWindow::openFile() {
 
         EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
         if(editSplitter) {
+            editSplitter->setOpen(true);
             editSplitter->getEdit()->setPlainText(readFile.readAll());
             editSplitter->setFilename(filename);
         }
@@ -222,11 +222,16 @@ bool EditorWindow::saveFile() {
         writer.setCodec(QTextCodec::codecForName("UTF-8"));
         success = writer.write(editSplitter->getEdit()->document());
         if(success) {
-            editSplitter->getEdit()->document()->setModified(false);
-            editSplitter->setChanged(false);
+            editSplitter->getDocument()->setModified(false);
+            QString title = _tabManager->tabText(_tabManager->currentIndex());
+            if (title.contains(QString("(*)"))){
+                std::size_t found = title.toStdString().find(" (*)");
+                if (found != std::string::npos) {
+                    _tabManager->setTabText(_tabManager->currentIndex(), title.replace(found, QString(" (*)").size(), ""));
+                }
+            }
         }
     }
-
     return success;
 }
 
@@ -249,7 +254,16 @@ bool EditorWindow::saveAs() {
             editSplitter->setFilename(filename);
             QFileInfo fileInfo(filename);
             _tabManager->setTabText(_tabManager->currentIndex(), QString(fileInfo.fileName()));
-            editSplitter->setChanged(false);
+            editSplitter->getDocument()->setModified(false);
+
+            QString title = _tabManager->tabText(_tabManager->currentIndex());
+            if (title.contains(QString("(*)"))){
+                std::size_t found = title.toStdString().find(" (*)");
+                if (found != std::string::npos) {
+                    _tabManager->setTabText(_tabManager->currentIndex(), title.replace(found, QString(" (*)").size(), ""));
+                }
+            }
+
         }
     } else {
         return false;
