@@ -392,6 +392,12 @@ void EditorWindow::closeEvent(QCloseEvent* event){
         if (response == QMessageBox::Save){
             saveFile();
         }
+        if (response == QMessageBox::Discard){
+            EditorQSplitter* currentTab = dynamic_cast<EditorQSplitter *>(_tabManager->widget(i));
+            if (currentTab->getFilename().isEmpty()){
+                _tabManager->removeTab(i);
+            }
+        }
     }
     if (hasToQuit){
         saveContext();
