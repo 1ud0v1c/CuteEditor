@@ -153,7 +153,21 @@ void EditorWindow::newTab() {
 }
 
 void EditorWindow::closeTab(int index) {
-    verifyClose(index);
+    int response = verifyClose(index);
+    switch(response){
+    case QMessageBox::Discard:
+        _tabManager->removeTab(index);
+        break;
+    case QMessageBox::Cancel:
+        break;
+    case QMessageBox::Save:
+        saveFile();
+        _tabManager->removeTab(index);
+        break;
+    default:
+        _tabManager->removeTab(index);
+        break;
+    }
 }
 
 int EditorWindow::verifyClose(int index){
@@ -167,22 +181,9 @@ int EditorWindow::verifyClose(int index){
         save->setDefaultButton(QMessageBox::Save);
         save->show();
         int selection = save->exec();
-        switch(selection){
-            case QMessageBox::Discard:
-                _tabManager->removeTab(index);
-                return QMessageBox::Discard;
-            case QMessageBox::Cancel:
-                return QMessageBox::Cancel;
-            case QMessageBox::Save:
-                saveFile();
-                _tabManager->removeTab(index);
-                return QMessageBox::Save;
-            default:
-                return -1;
-        }
-    } else{
-        _tabManager->removeTab(index);
+        return selection;
     }
+    return -1;
 }
 
 void EditorWindow::openFile() {
@@ -380,15 +381,25 @@ void EditorWindow::saveContext() {
    }
 }
 
-/*void EditorWindow::closeEvent(QCloseEvent* event){
+void EditorWindow::closeEvent(QCloseEvent* event){
     int response;
+    bool hasToQuit = true;
     for (int i = 0; i < _tabManager->count(); ++i) {
-         response = verifyClose(i);
-         if (response ==  QMessageBox::Cancel){
-             event->ignore();
-         }
+        response = verifyClose(i);
+        if (response ==  QMessageBox::Cancel){
+            hasToQuit = false;
+        }
+        if (response == QMessageBox::Save){
+            saveFile();
+        }
     }
-}*/
+    if (hasToQuit){
+        saveContext();
+        event->accept();
+    }else{
+        event->ignore();
+    }
+}
 
 EditorWindow::~EditorWindow() {
 

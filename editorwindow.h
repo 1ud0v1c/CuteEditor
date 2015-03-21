@@ -23,7 +23,7 @@ class EditorWindow : public QMainWindow {
         void restoreContext();
 
     protected :
-        // void closeEvent(QCloseEvent* event);
+         void closeEvent(QCloseEvent* event);
 
     private :
         int verifyClose(int index);
