@@ -23,6 +23,7 @@
 #include <sstream>
 #include <QSettings>
 #include <QCoreApplication>
+#include <QTextCodec>
 
 EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     _tabManager = new QTabWidget(this);
@@ -54,7 +55,12 @@ void EditorWindow::restoreContext() {
 
     settings.beginGroup("General");
     int nbTabs = settings.value("size").value<int>();
-    bool isToolbarVisible = settings.value("isToolbarVisible").value<bool>();
+    bool isToolbarVisible;
+    if(settings.contains("isToolbarVisible")) {
+        isToolbarVisible = settings.value("isToolbarVisible").value<bool>();
+    } else {
+        isToolbarVisible = true;
+    }
     (isToolbarVisible) ? _toolbar->show() : _toolbar->hide();
     settings.endGroup();
 
@@ -80,6 +86,7 @@ void EditorWindow::newTabWithName(const char* name) {
         QFile file(filename);
         file.open(QFile::ReadOnly | QFile::Text);
         QTextStream readFile(&file);
+        readFile.setCodec("UTF-8");
 
         QFileInfo fileInfo(file.fileName());
         int newTab = _tabManager->addTab(new EditorQSplitter(), fileInfo.fileName());
@@ -183,7 +190,8 @@ void EditorWindow::openFile() {
     if (!filename.isEmpty()) {
         QFile file(filename);
         file.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ReadFile(&file);
+        QTextStream readFile(&file);
+        readFile.setCodec("UTF-8");
 
         QFileInfo fileInfo(file.fileName());
         int newTab = _tabManager->addTab(new EditorQSplitter(),fileInfo.fileName());
@@ -191,7 +199,7 @@ void EditorWindow::openFile() {
 
         EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
         if(editSplitter) {
-            editSplitter->getEdit()->setPlainText(ReadFile.readAll());
+            editSplitter->getEdit()->setPlainText(readFile.readAll());
             editSplitter->setFilename(filename);
         }
     } else {
@@ -211,6 +219,7 @@ bool EditorWindow::saveFile() {
         }
         QTextDocumentWriter writer(filename);
         writer.setFormat("plaintext");
+        writer.setCodec(QTextCodec::codecForName("UTF-8"));
         success = writer.write(editSplitter->getEdit()->document());
         if(success) {
             editSplitter->getEdit()->document()->setModified(false);
@@ -230,6 +239,7 @@ bool EditorWindow::saveAs() {
             qDebug() << "Erreur lors de l'ecriture du fichier";
         } else {
             QTextStream stream(&file);
+            stream.setCodec("UTF-8");
             EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
             if(editSplitter) {
                 stream << editSplitter->getEdit()->toPlainText();
