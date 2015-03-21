@@ -45,7 +45,6 @@ EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     shortcut->setContext(Qt::ApplicationShortcut);
 
     connect(shortcut, SIGNAL(activated()), this, SLOT(toggleToolbar()));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(saveContext()));
 
     restoreContext();
 }
