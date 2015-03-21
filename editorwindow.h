@@ -22,7 +22,10 @@ class EditorWindow : public QMainWindow {
         void newTabWithName(const char *name);
         void restoreContext();
 
-private :
+    protected :
+        // void closeEvent(QCloseEvent* event);
+
+    private :
         int verifyClose(int index);
 
     public slots:
@@ -39,9 +42,6 @@ private :
         void toggleToolbar();
         void handleChangedTab(int index);
         void saveContext();
-
-protected :
-        //void closeEvent(QCloseEvent* event);
 
     private:
         QAction* _newFile;

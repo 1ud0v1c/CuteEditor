@@ -120,7 +120,7 @@ void EditorWindow::createMenu() {
     _closeFile = file->addAction(QIcon(":/img/document-close.png"),"Fermer");
     _closeFile->setShortcut(Qt::CTRL + Qt::Key_W);
 
-    _quit = file->addAction(QIcon(":/img/document-exit.png"), "Quitter", this, SLOT(saveContext()));
+    _quit = file->addAction(QIcon(":/img/document-exit.png"), "Quitter", this, SLOT(close()));
     _quit->setShortcut(Qt::CTRL + Qt::Key_Q);
 
     QMenu* edit = menuBar()->addMenu("Edition");
@@ -157,29 +157,30 @@ void EditorWindow::closeTab(int index) {
 }
 
 int EditorWindow::verifyClose(int index){
-    if(static_cast<EditorQSplitter*>(_tabManager->widget(index))->getDocument()->isModified()) {
+    EditorQSplitter* widget = dynamic_cast<EditorQSplitter*>(_tabManager->widget(index));
+    if(widget->getDocument()->isModified()) {
         QMessageBox* save = new QMessageBox(0);
         save->setModal(true);
-        save->setText("Your file has been modified : do you want to save changes ?");
-        save->addButton(QMessageBox::Save);
-        save->addButton(QMessageBox::Discard);
-        save->addButton(QMessageBox::Cancel);
+        save->setText("Your document \""+widget->getFilename()+"\" has been modified.");
+        save->setInformativeText("Do you want to save changes ?");
+        save->setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        save->setDefaultButton(QMessageBox::Save);
         save->show();
         int selection = save->exec();
         switch(selection){
-            case QMessageBox::Save:
-                saveFile();
-                _tabManager->removeTab(index);
-                return QMessageBox::Save;
             case QMessageBox::Discard:
                 _tabManager->removeTab(index);
                 return QMessageBox::Discard;
             case QMessageBox::Cancel:
                 return QMessageBox::Cancel;
+            case QMessageBox::Save:
+                saveFile();
+                _tabManager->removeTab(index);
+                return QMessageBox::Save;
             default:
                 return -1;
         }
-    }else{
+    } else{
         _tabManager->removeTab(index);
     }
 }
@@ -203,7 +204,7 @@ void EditorWindow::openFile() {
             editSplitter->setFilename(filename);
         }
     } else {
-        qDebug() << "Une erreur s'est produite lors de l'ouverture de ce fichier.";
+        qDebug() << "An error occured during the opening of the file.";
     }
 }
 
