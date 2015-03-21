@@ -78,6 +78,10 @@ void EditorWindow::restoreContext() {
     }
 }
 
+void EditorWindow::setSaveEnable(bool b){
+    _saveFile->setEnabled(b);
+    _saveasFile->setEnabled(b);
+}
 
 void EditorWindow::newTabWithName(const char* name) {
     QString filename = QString(name);
@@ -113,11 +117,17 @@ void EditorWindow::createMenu() {
 
     _saveFile = file->addAction(QIcon(":/img/document-save.png"),"Enregistrer");
     _saveFile->setShortcut(Qt::CTRL + Qt::Key_S);
+    _saveFile->setDisabled(true);
 
     _saveasFile = file->addAction(QIcon(":/img/document-save-as.png"),"Enregistrer sous...");
-
+    if (_tabManager->count() == 0){
+        _saveasFile->setDisabled(true);
+    }
     _closeFile = file->addAction(QIcon(":/img/document-close.png"),"Fermer");
     _closeFile->setShortcut(Qt::CTRL + Qt::Key_W);
+    if (_tabManager->count() == 0){
+        _closeFile->setDisabled(true);
+    }
 
     _quit = file->addAction(QIcon(":/img/document-exit.png"), "Quitter", this, SLOT(close()));
     _quit->setShortcut(Qt::CTRL + Qt::Key_Q);
@@ -149,6 +159,9 @@ void EditorWindow::setActions() {
 void EditorWindow::newTab() {
     int newTab = _tabManager->addTab(new EditorQSplitter(),"New Document");
     _tabManager->setCurrentIndex(newTab);
+    _closeFile->setEnabled(true);
+    _saveasFile->setEnabled(true);
+    _saveFile->setEnabled(true);
 }
 
 void EditorWindow::closeTab(int index) {
@@ -166,6 +179,11 @@ void EditorWindow::closeTab(int index) {
     default:
         _tabManager->removeTab(index);
         break;
+    }
+    if(_tabManager->count() == 0){
+        _closeFile->setDisabled(true);
+        _saveasFile->setDisabled(true);
+        _saveFile->setDisabled(true);
     }
 }
 
@@ -211,7 +229,6 @@ void EditorWindow::openFile() {
 
 bool EditorWindow::saveFile() {
     bool success = false;
-
     EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
     if(editSplitter) {
         QString filename = editSplitter->getFilename();
@@ -231,6 +248,7 @@ bool EditorWindow::saveFile() {
                     _tabManager->setTabText(_tabManager->currentIndex(), title.replace(found, QString(" (*)").size(), ""));
                 }
             }
+            _saveFile->setDisabled(true);
         }
     }
     return success;

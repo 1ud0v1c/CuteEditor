@@ -21,6 +21,7 @@ class EditorWindow : public QMainWindow {
         void setFilename(QString fileName);
         void newTabWithName(const char *name);
         void restoreContext();
+        void setSaveEnable(bool b);
 
     protected :
          void closeEvent(QCloseEvent* event);

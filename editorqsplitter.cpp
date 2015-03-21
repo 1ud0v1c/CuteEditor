@@ -44,12 +44,12 @@ void EditorQSplitter::setTabSize(int tabSize) {
 }
 
 void EditorQSplitter::update() {
+
     _view->update(_edit->toPlainText());
 
     QObject *currentWidget = this->parent();
     QTabWidget* tabWidget = qobject_cast<QTabWidget *>(currentWidget->parent());
     EditorWindow* window = qobject_cast<EditorWindow *>(tabWidget->parent());
-
     int lines = _document->lineCount();
     int characters = _document->characterCount()-1;
 
@@ -60,6 +60,7 @@ void EditorQSplitter::update() {
     if(tabWidget && _document->isModified() && !_edit->getOpen()) {
         QString title = tabWidget->tabText(tabWidget->currentIndex());
         if (!title.contains(QString("(*)"))){
+            window->setSaveEnable(true);
             tabWidget->setTabText(tabWidget->currentIndex(), title +" (*)");
         }
     }
