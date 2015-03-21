@@ -27,24 +27,6 @@
 EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     _tabManager = new QTabWidget(this);
     setCentralWidget(_tabManager);
-
-
-    // Context
-    QSettings settings("QtEditor", "QtEditorSettings");
-
-    std::stringstream s;
-    s << "onglet" << 0;
-    QString optionName = QString(s.str().c_str());
-
-    settings.beginGroup(optionName);
-    QString filename = settings.value("name").value<QString>();
-    qDebug() << filename.toStdString().c_str();
-    settings.endGroup();
-
-    newTabWithName(filename.toStdString().c_str());
-    // Fin Context
-
-
     _tabManager->setTabsClosable(true);
 
     createMenu();
@@ -63,7 +45,58 @@ EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
 
     connect(shortcut, SIGNAL(activated()), this, SLOT(toggleToolbar()));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(saveContext()));
+
+    restoreContext();
 }
+
+void EditorWindow::restoreContext() {
+    QSettings settings("QtEditor", "QtEditorSettings");
+
+    settings.beginGroup("General");
+    int nbTabs = settings.value("size").value<int>();
+    bool isToolbarVisible = settings.value("isToolbarVisible").value<bool>();
+    (isToolbarVisible) ? _toolbar->show() : _toolbar->hide();
+    settings.endGroup();
+
+    if(nbTabs > 0) {
+        for (int i = 0; i < nbTabs; ++i) {
+            std::stringstream s;
+            s << "onglet" << i;
+            QString optionName = QString(s.str().c_str());
+
+            settings.beginGroup(optionName);
+            QString filename = settings.value("name").value<QString>();
+            settings.endGroup();
+
+            newTabWithName(filename.toStdString().c_str());
+        }
+    }
+}
+
+
+void EditorWindow::newTabWithName(const char* name) {
+    QString filename = QString(name);
+    if (!filename.isEmpty()) {
+        QFile file(filename);
+        file.open(QFile::ReadOnly | QFile::Text);
+        QTextStream readFile(&file);
+
+        QFileInfo fileInfo(file.fileName());
+        int newTab = _tabManager->addTab(new EditorQSplitter(), fileInfo.fileName());
+        _tabManager->setCurrentIndex(newTab);
+
+        EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
+        if(editSplitter) {
+            editSplitter->getEdit()->setPlainText(readFile.readAll());
+            editSplitter->setFilename(filename);
+        }
+    } else {
+        qDebug() << "Une erreur s'est produite lors de l'ouverture de ce fichier.";
+    }
+}
+
+
+
 
 void EditorWindow::createMenu() {
     QMenu* file = menuBar()->addMenu("File");
@@ -113,30 +146,6 @@ void EditorWindow::newTab() {
     _tabManager->setCurrentIndex(newTab);
 }
 
-void EditorWindow::newTabWithName(const char* name) {
-    QString filename = QString(name);
-    if (!filename.isEmpty()) {
-        QFile file(filename);
-        file.open(QFile::ReadOnly | QFile::Text);
-        qDebug() << file.isOpen();
-        qDebug() << file.isReadable();
-        QTextStream readFile(&file);
-        qDebug() << readFile.status();
-
-        QFileInfo fileInfo(file.fileName());
-        int newTab = _tabManager->addTab(new EditorQSplitter(), fileInfo.fileName());
-        _tabManager->setCurrentIndex(newTab);
-
-        EditorQSplitter* editSplitter = getCurrentEditorQSplitter();
-        if(editSplitter) {
-            // editSplitter->getEdit()->setPlainText(readFile.readAll());
-            editSplitter->setFilename(filename);
-        }
-    } else {
-        qDebug() << "Une erreur s'est produite lors de l'ouverture de ce fichier.";
-    }
-}
-
 void EditorWindow::closeTab(int index) {
     verifyClose(index);
 }
@@ -152,17 +161,17 @@ int EditorWindow::verifyClose(int index){
         save->show();
         int selection = save->exec();
         switch(selection){
-        case QMessageBox::Save:
-            saveFile();
-            _tabManager->removeTab(index);
-            return QMessageBox::Save;
-        case QMessageBox::Discard:
-            _tabManager->removeTab(index);
-            return QMessageBox::Discard;
-        case QMessageBox::Cancel:
-            return QMessageBox::Cancel;
-        default:
-            return -1;
+            case QMessageBox::Save:
+                saveFile();
+                _tabManager->removeTab(index);
+                return QMessageBox::Save;
+            case QMessageBox::Discard:
+                _tabManager->removeTab(index);
+                return QMessageBox::Discard;
+            case QMessageBox::Cancel:
+                return QMessageBox::Cancel;
+            default:
+                return -1;
         }
     }else{
         _tabManager->removeTab(index);
@@ -304,8 +313,10 @@ QLabel* EditorWindow::getStatusBar() {
 void EditorWindow::toggleToolbar() {
     if(_toolbar->isVisible()) {
         _toolbar->hide();
+        _isToolbarVisible = false;
     } else {
         _toolbar->show();
+        _isToolbarVisible = true;
     }
 }
 
@@ -326,6 +337,11 @@ void EditorWindow::saveContext() {
    QSettings settings("QtEditor", "QtEditorSettings");
    settings.clear();
 
+   settings.beginGroup("General");
+   settings.setValue("isToolbarVisible", _isToolbarVisible);
+   settings.setValue("size",_tabManager->count());
+   settings.endGroup();
+
    for (int i = 0; i < _tabManager->count(); ++i) {
         EditorQSplitter* currentTab = dynamic_cast<EditorQSplitter *>(_tabManager->widget(i));
 
@@ -334,12 +350,12 @@ void EditorWindow::saveContext() {
         QString optionName = QString(s.str().c_str());
 
         settings.beginGroup(optionName);
-        settings.setValue("name",(!currentTab->getFilename().isEmpty()) ? currentTab->getFilename() : "New Document");
+        settings.setValue("name",(!currentTab->getFilename().isEmpty()) ? currentTab->getFilename() : QString("New Document"));
         settings.endGroup();
    }
 }
 
-void EditorWindow::closeEvent(QCloseEvent* event){
+/*void EditorWindow::closeEvent(QCloseEvent* event){
     int response;
     for (int i = 0; i < _tabManager->count(); ++i) {
          response = verifyClose(i);
@@ -347,7 +363,7 @@ void EditorWindow::closeEvent(QCloseEvent* event){
              event->ignore();
          }
     }
-}
+}*/
 
 EditorWindow::~EditorWindow() {
 

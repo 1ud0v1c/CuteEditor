@@ -20,6 +20,7 @@ class EditorWindow : public QMainWindow {
         EditorQSplitter* getCurrentEditorQSplitter();
         void setFilename(QString fileName);
         void newTabWithName(const char *name);
+        void restoreContext();
 
 private :
         int verifyClose(int index);
@@ -40,7 +41,7 @@ private :
         void saveContext();
 
 protected :
-        void closeEvent(QCloseEvent* event);
+        //void closeEvent(QCloseEvent* event);
 
     private:
         QAction* _newFile;
@@ -56,6 +57,8 @@ protected :
         QTabWidget *_tabManager;
         QToolBar *_toolbar;
         QLabel *_stats;
+
+        bool _isToolbarVisible;
 };
 
 #endif // EDITORWINDOW_H
