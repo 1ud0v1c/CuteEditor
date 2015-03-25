@@ -25,7 +25,7 @@
 #include <QCoreApplication>
 #include <QTextCodec>
 
-EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
+EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {   
     _tabManager = new QTabWidget(this);
     setCentralWidget(_tabManager);
     _tabManager->setTabsClosable(true);
@@ -34,7 +34,7 @@ EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     createToolbar();
     setActions();
 
-    _stats = new QLabel("Caractere(s) : 0  -  Ligne(s) : 0");
+    _stats = new QLabel(tr("Character(s) : 0  -  Line(s) : 0"));
     statusBar()->addPermanentWidget(_stats);
 
     setMinimumSize(500,500);
@@ -114,40 +114,40 @@ void EditorWindow::newTabWithName(const char* name) {
 
 
 void EditorWindow::createMenu() {
-    QMenu* file = menuBar()->addMenu("File");
-    _newFile = file->addAction(QIcon(":/img/document-new.png"),"Nouveau");
+    QMenu* file = menuBar()->addMenu(tr("File"));
+    _newFile = file->addAction(QIcon(":/img/document-new.png"),tr("New"));
     _newFile->setShortcut(Qt::CTRL + Qt::Key_N);
 
-    _openFile = file->addAction(QIcon(":/img/document-open.png"),"Ouvrir...");
+    _openFile = file->addAction(QIcon(":/img/document-open.png"),tr("Open..."));
     _openFile->setShortcut(Qt::CTRL + Qt::Key_O);
 
-    _saveFile = file->addAction(QIcon(":/img/document-save.png"),"Enregistrer");
+    _saveFile = file->addAction(QIcon(":/img/document-save.png"),tr("Save"));
     _saveFile->setShortcut(Qt::CTRL + Qt::Key_S);
     _saveFile->setDisabled(true);
 
-    _saveasFile = file->addAction(QIcon(":/img/document-save-as.png"),"Enregistrer sous...");
+    _saveasFile = file->addAction(QIcon(":/img/document-save-as.png"),tr("Save as..."));
     if (_tabManager->count() == 0){
         _saveasFile->setDisabled(true);
     }
-    _closeFile = file->addAction(QIcon(":/img/document-close.png"),"Fermer");
+    _closeFile = file->addAction(QIcon(":/img/document-close.png"),tr("Close"));
     _closeFile->setShortcut(Qt::CTRL + Qt::Key_W);
     if (_tabManager->count() == 0){
         _closeFile->setDisabled(true);
     }
 
-    _quit = file->addAction(QIcon(":/img/document-exit.png"), "Quitter", this, SLOT(close()));
+    _quit = file->addAction(QIcon(":/img/document-exit.png"), tr("Quit"), this, SLOT(close()));
     _quit->setShortcut(Qt::CTRL + Qt::Key_Q);
 
-    QMenu* edit = menuBar()->addMenu("Edition");
-    _copy = edit->addAction(QIcon(":/img/edit-copy.png"),"Copier");
+    QMenu* edit = menuBar()->addMenu(tr("Edit"));
+    _copy = edit->addAction(QIcon(":/img/edit-copy.png"),tr("Copy"));
     _copy->setDisabled(true);
-    _cut = edit->addAction(QIcon(":/img/edit-cut.png"),"Couper");
+    _cut = edit->addAction(QIcon(":/img/edit-cut.png"),tr("Paste"));
     _cut->setDisabled(true);
-    _paste = edit->addAction(QIcon(":/img/edit-paste.png"),"Coller");
+    _paste = edit->addAction(QIcon(":/img/edit-paste.png"),tr("Cut"));
     _paste->setDisabled(true);
 
-    QMenu* about = menuBar()->addMenu("Aide");
-    about->addAction(QIcon(":/img/about.png"),"A propos", this, SLOT(about()));
+    QMenu* about = menuBar()->addMenu(tr("Help"));
+    about->addAction(QIcon(":/img/about.png"),tr("About"), this, SLOT(about()));
 }
 
 
@@ -167,7 +167,7 @@ void EditorWindow::setActions() {
 }
 
 void EditorWindow::newTab() {
-    int newTab = _tabManager->addTab(new EditorQSplitter(),"New Document");
+    int newTab = _tabManager->addTab(new EditorQSplitter(),tr("New Document"));
     _tabManager->setCurrentIndex(newTab);
     _closeFile->setEnabled(true);
     _saveasFile->setEnabled(true);
@@ -202,8 +202,10 @@ int EditorWindow::verifyClose(int index){
     if(widget->getDocument()->isModified()) {
         QMessageBox* save = new QMessageBox(0);
         save->setModal(true);
-        save->setText("Your document \""+widget->getFilename()+"\" has been modified.");
-        save->setInformativeText("Do you want to save changes ?");
+        std::stringstream s;
+        s << "Your document \"" << widget->getFilename().toStdString() << "\" has been modified.";
+        save->setText(tr(s.str().c_str()));
+        save->setInformativeText(tr("Do you want to save changes ?"));
         save->setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
         save->setDefaultButton(QMessageBox::Save);
         save->show();
@@ -355,7 +357,7 @@ void EditorWindow::createToolbar() {
 
 void EditorWindow::about() {
     QMessageBox *msg = new QMessageBox();
-    msg->setText("Editeur HTML, TP4 QT");
+    msg->setText(tr("HTML Editor, TP4 QT : ENSICAEN\nAuthors : Vimont Ludovic & Lagarrigue Lucie"));
     msg->exec();
 }
 
@@ -381,8 +383,8 @@ void EditorWindow::handleChangedTab(int index) {
         int lines = doc->lineCount();
         int characters = doc->characterCount()-1;
         std::ostringstream s;
-        s << "Caractere(s) : " << characters << " - Lignes : " << lines;
-        getStatusBar()->setText(s.str().c_str());
+        s << "Character(s) : " << characters << " - Line(s) : " << lines;
+        getStatusBar()->setText(tr(s.str().c_str()));
     }
 }
 
@@ -403,7 +405,7 @@ void EditorWindow::saveContext() {
         QString optionName = QString(s.str().c_str());
 
         settings.beginGroup(optionName);
-        settings.setValue("name",(!currentTab->getFilename().isEmpty()) ? currentTab->getFilename() : QString("New Document"));
+        settings.setValue("name",(!currentTab->getFilename().isEmpty()) ? currentTab->getFilename() : QString(tr("New Document")));
         settings.endGroup();
    }
 }

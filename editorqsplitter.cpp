@@ -24,7 +24,7 @@ EditorQSplitter::EditorQSplitter(QWidget *parent) : QSplitter(parent) {
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     QWidget *rightPanel = new QWidget();
     rightPanel->setLayout(vboxLayout);
-    _display = new QLabel("Apercu");
+    _display = new QLabel(tr("Preview"));
     vboxLayout->addWidget(_display);
     _document = _edit->document();
     HtmlHighlighter *highlighter = new HtmlHighlighter(_document);
@@ -54,8 +54,8 @@ void EditorQSplitter::update() {
     int characters = _document->characterCount()-1;
 
     std::ostringstream s;
-    s << "Caractere(s) : " << characters << " - Lignes : " << lines;
-    window->getStatusBar()->setText(s.str().c_str());
+    s << "Character(s) : " << characters << " - Line(s) : " << lines;
+    window->getStatusBar()->setText(tr(s.str().c_str()));
 
     if(tabWidget && _document->isModified() && !_edit->getOpen()) {
         QString title = tabWidget->tabText(tabWidget->currentIndex());
