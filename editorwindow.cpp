@@ -45,7 +45,7 @@ EditorWindow::EditorWindow(QWidget *parent) : QMainWindow(parent) {
     shortcut->setContext(Qt::ApplicationShortcut);
 
     connect(shortcut, SIGNAL(activated()), this, SLOT(toggleToolbar()));
-
+    connect(QApplication::clipboard() ,SIGNAL(dataChanged()), this, SLOT(handleClipboard()));
     restoreContext();
 }
 
@@ -75,12 +75,18 @@ void EditorWindow::restoreContext() {
 
             newTabWithName(filename.toStdString().c_str());
         }
+        _closeFile->setDisabled(false);
     }
 }
 
 void EditorWindow::setSaveEnable(bool b){
     _saveFile->setEnabled(b);
     _saveasFile->setEnabled(b);
+}
+
+void EditorWindow::setActiveActionsSelection(bool b) {
+    _copy->setEnabled(b);
+    _cut->setEnabled(b);
 }
 
 void EditorWindow::newTabWithName(const char* name) {
@@ -134,12 +140,16 @@ void EditorWindow::createMenu() {
 
     QMenu* edit = menuBar()->addMenu("Edition");
     _copy = edit->addAction(QIcon(":/img/edit-copy.png"),"Copier");
+    _copy->setDisabled(true);
     _cut = edit->addAction(QIcon(":/img/edit-cut.png"),"Couper");
+    _cut->setDisabled(true);
     _paste = edit->addAction(QIcon(":/img/edit-paste.png"),"Coller");
+    _paste->setDisabled(true);
 
     QMenu* about = menuBar()->addMenu("Aide");
     about->addAction(QIcon(":/img/about.png"),"A propos", this, SLOT(about()));
 }
+
 
 void EditorWindow::setActions() {
     connect(_newFile, SIGNAL(triggered()), this, SLOT(newTab()));
@@ -167,18 +177,18 @@ void EditorWindow::newTab() {
 void EditorWindow::closeTab(int index) {
     int response = verifyClose(index);
     switch(response){
-    case QMessageBox::Discard:
-        _tabManager->removeTab(index);
-        break;
-    case QMessageBox::Cancel:
-        break;
-    case QMessageBox::Save:
-        saveFile();
-        _tabManager->removeTab(index);
-        break;
-    default:
-        _tabManager->removeTab(index);
-        break;
+        case QMessageBox::Discard:
+            _tabManager->removeTab(index);
+            break;
+        case QMessageBox::Cancel:
+            break;
+        case QMessageBox::Save:
+            saveFile();
+            _tabManager->removeTab(index);
+            break;
+        default:
+            _tabManager->removeTab(index);
+            break;
     }
     if(_tabManager->count() == 0){
         _closeFile->setDisabled(true);
@@ -291,7 +301,7 @@ bool EditorWindow::saveAs() {
 }
 
 void EditorWindow::closeFile() {
-    verifyClose(_tabManager->currentIndex());
+    closeTab(_tabManager->currentIndex());
 }
 
 void EditorWindow::copy() {
@@ -421,6 +431,16 @@ void EditorWindow::closeEvent(QCloseEvent* event){
         event->accept();
     }else{
         event->ignore();
+    }
+}
+
+void EditorWindow::handleClipboard() {
+    QClipboard *clipboard = QApplication::clipboard();
+    QString text = clipboard->text();
+    if(text.length() > 0) {
+        _paste->setDisabled(false);
+    } else {
+        _paste->setDisabled(true);
     }
 }
 

@@ -35,6 +35,7 @@ class EditorQSplitter : public QSplitter {
 
     public slots:
         void update();
+        void handleSelection();
 };
 
 #endif // EDITORQSPLITTER_H

@@ -35,6 +35,7 @@ EditorQSplitter::EditorQSplitter(QWidget *parent) : QSplitter(parent) {
 
     setAcceptDrops(true);
     connect(_document,SIGNAL(contentsChanged()),this,SLOT(update()));
+    connect(_edit, SIGNAL(selectionChanged()),this, SLOT(handleSelection()));
 }
 
 void EditorQSplitter::setTabSize(int tabSize) {
@@ -44,7 +45,6 @@ void EditorQSplitter::setTabSize(int tabSize) {
 }
 
 void EditorQSplitter::update() {
-
     _view->update(_edit->toPlainText());
 
     QObject *currentWidget = this->parent();
@@ -65,6 +65,17 @@ void EditorQSplitter::update() {
         }
     }
 }
+
+void EditorQSplitter::handleSelection() {
+    QString selectedText = _edit->textCursor().selectedText();
+    EditorWindow* window = qobject_cast<EditorWindow *>(this->parent()->parent()->parent());
+    if(selectedText.length() > 0) {
+        window->setActiveActionsSelection(true);
+    } else {
+        window->setActiveActionsSelection(false);
+    }
+}
+
 
 QTextEdit* EditorQSplitter::getEdit() {
     return _edit;

@@ -22,6 +22,7 @@ class EditorWindow : public QMainWindow {
         void newTabWithName(const char *name);
         void restoreContext();
         void setSaveEnable(bool b);
+        void setActiveActionsSelection(bool b);
 
     protected :
          void closeEvent(QCloseEvent* event);
@@ -43,6 +44,7 @@ class EditorWindow : public QMainWindow {
         void toggleToolbar();
         void handleChangedTab(int index);
         void saveContext();
+        void handleClipboard();
 
     private:
         QAction* _newFile;
