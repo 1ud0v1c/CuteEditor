@@ -1,9 +1,9 @@
-# QtEditor
+# QtEditor - TP4 QT
 
-Lucie LAGARRIGUE
-Ludovic VIMONT
+- Lucie LAGARRIGUE
+- Ludovic VIMONT
+
 -----
-TP4 - Qt
 
 ## Fonctionnalités :
 
