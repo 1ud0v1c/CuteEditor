@@ -2,7 +2,13 @@
 #define VIEWEDIT_H
 
 #include <QTextEdit>
-
+/**
+ *
+ * @author Lucie LAGARRIGUE
+ * @author Ludovic VIMONT
+ *
+ * @brief Classe ViewEdit : gère le changement d'état de la souris
+ */
 class ViewEdit : public QTextEdit {
     Q_OBJECT
 

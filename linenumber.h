@@ -5,6 +5,13 @@
 #include <QTextEdit>
 #include <QSize>
 
+/**
+ *
+ * @author Lucie LAGARRIGUE
+ * @author Ludovic VIMONT
+ *
+ * @brief Classe LineNumber
+ */
 class LineNumber : public QWidget {
     Q_OBJECT
 
