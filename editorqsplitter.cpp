@@ -27,7 +27,7 @@ EditorQSplitter::EditorQSplitter(QWidget *parent) : QSplitter(parent) {
     _display = new QLabel(tr("Preview"));
     vboxLayout->addWidget(_display);
     _document = _edit->document();
-    HtmlHighlighter *highlighter = new HtmlHighlighter(_document);
+    new HtmlHighlighter(_document);
     _view = new ViewEdit();
     vboxLayout->addWidget(_view);
 

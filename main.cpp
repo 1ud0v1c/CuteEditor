@@ -6,7 +6,7 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     QTranslator *translator = new QTranslator;
-    translator->load("data/qteditor_de.qm", ".");
+    translator->load("data/qteditor_fr.qm", ".");
     a.installTranslator(translator);
 
     EditorWindow w;

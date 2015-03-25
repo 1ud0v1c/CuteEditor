@@ -30,3 +30,5 @@ HEADERS  += editorwindow.h \
 
 RESOURCES += \
     ressources.qrc
+
+TRANSLATIONS += qteditor_fr.ts qteditor_de.ts
